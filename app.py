@@ -1,14 +1,15 @@
+import os
 import streamlit as st
 import pandas as pd
-import os
 from automacao_coleta.utils.datas import get_range_historico
 from automacao_coleta.src.historico import baixar_dados_historicos
 from automacao_coleta.src.atualizacao import atualizar_ano_corrente
+from utils.credits import display_credits
 
 st.title("📦 Coletor de Dados")
-st.subheader("Coletor de dados de comércio exterior brasileiro")
+st.subheader("Dados brutos de comércio exterior brasileiro")
+st.write('---')
 st.write("Escolha abaixo a ação que deseja realizar:")
-
 
 anos_disponiveis = get_range_historico()
 anos_selecionados = st.multiselect(
@@ -66,7 +67,7 @@ def concatall(tipo, modo):
         return pd.DataFrame()
 
 # Botão Streamlit
-if st.button("📊 Visualizar Dados", use_container_width=True, type='primary'):
+with st.expander("📊 Visualizar Dados", expanded=False):
     df_exp = concatall('EXP', 'Exportação')
     df_imp = concatall('IMP', 'Importação')
     df = pd.concat([df_exp, df_imp], ignore_index=True)
@@ -77,9 +78,25 @@ if st.button("📊 Visualizar Dados", use_container_width=True, type='primary'):
         col1.metric(f"Total de linhas:", len(df), delta=None, help=None, label_visibility="visible", border=True)
         col2.metric(f"Total de colunas:", len(df.columns), delta=None, help=None, label_visibility="visible", border=True)
 
-        visualizacao = df.head(100)
         st.write('Visualização das primeiras 100 linhas')
-        st.data_editor(visualizacao, use_container_width=True, hide_index=True, num_rows="dynamic", height=500)
+        linhas_por_pagina = 100
+        total_paginas = (len(df) - 1) // linhas_por_pagina + 1
+        pagina = st.number_input("📄 Página", min_value=1, max_value=total_paginas, value=1)
+
+        inicio = (pagina - 1) * linhas_por_pagina
+        fim = inicio + linhas_por_pagina
+        st.write(f"Visualizando linhas {inicio + 1} a {min(fim, len(df))} de {len(df)}")
+        st.data_editor(df.iloc[inicio:fim], use_container_width=True, height=400, num_rows='dynamic', hide_index=False)
+
+        st.download_button(
+            label="📥 Download do DataFrame completo",
+            data=df.to_parquet(index=False),
+            file_name='dados_comerciais.parquet',
+            mime='application/octet-stream'
+        , use_container_width=True, type='primary')
+        st.caption('Download em Parquet. Para abrir, use o Pandas ou PyArrow.')
     else:
         st.warning("Nenhum dado foi carregado.")
 
+
+display_credits()
