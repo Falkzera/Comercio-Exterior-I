@@ -11,9 +11,22 @@ Você pode acessar o app diretamente pelo navegador, sem precisar instalar nada:
 ## 🚀 Funcionalidades
 
 - 🔎 Filtragem de dados por ano
-- 👁️ Visualização interativa dos dados
-- 📥 Download direto das bases selecionadas
-- 🛠️ Organização modular: coleta automatizada, processamento e utilitários
+- 📚 Download de dados históricos diretamente do site da balança comercial
+- 🔁 Atualização automática dos dados do ano corrente
+- 📊 Visualização tabular interativa dos dados com paginação
+- 💾 Download completo dos dados em formato `.parquet`
+- 📦 Dados disponíveis nos modos:
+  - `EXP`: Exportações brasileiras
+  - `IMP`: Importações brasileiras
+
+## 🛠 Tecnologias Utilizadas
+
+- Python
+- Streamlit
+- Pandas
+- PyArrow
+- Requests
+- Logging (built-in)
 
 ## ⚙️ Instalação Local
 
@@ -38,3 +51,7 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+## ✍️ Créditos
+
+Desenvolvido por: [Lucas Falcão](https://falkzera.streamlit.app/)
